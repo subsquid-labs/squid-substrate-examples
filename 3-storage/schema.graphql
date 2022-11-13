@@ -1,0 +1,20 @@
+type Era @entity {
+  id: ID!
+  index: Int!
+  startedAt: Int!
+  validators: [EraValidator!]! @derivedFrom(field: "era")
+}
+
+type EraValidator @entity {
+  id: ID!
+  validatorId: String!
+  era: Era!
+  selfBonded: BigInt!
+  totalBonded: BigInt!
+  nominators: [Nomination!]!
+}
+
+type Nomination {
+  nominatorId: String!
+  amount: BigInt!
+}
