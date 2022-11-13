@@ -1,0 +1,11 @@
+type Account @entity {
+  "Account address"
+  id: ID!
+  display: String
+  legal: String
+  web: String
+  riot: String
+  email: String
+  twitter: String
+}
+

@@ -1,0 +1,11 @@
+{
+  "outDir": "src/types",
+  "specVersions": "https://kusama.archive.subsquid.io/graphql",
+  "events": [
+  ],
+  "calls": [ 
+    "Identity.set_identity"
+  ],
+  "storage": [
+  ]
+}
