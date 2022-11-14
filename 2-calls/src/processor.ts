@@ -15,7 +15,7 @@ const processor = new SubstrateBatchProcessor()
         data: {
             call: {
                 args: true,
-                origin: true
+                origin: true,
             },
         },
     } as const)
@@ -23,7 +23,7 @@ const processor = new SubstrateBatchProcessor()
         data: {
             call: {
                 args: true,
-                origin: true
+                origin: true,
             },
         },
     } as const)
@@ -32,10 +32,41 @@ type Item = BatchProcessorItem<typeof processor>
 type Ctx = BatchContext<Store, Item>
 
 processor.run(new TypeormDatabase(), async (ctx) => {
-    let indentityData = getIdentityData(ctx)
+    let identitiesData: IdentityData[] = []
 
+    for (let block of ctx.blocks) {
+        for (let item of block.items) {
+            if (item.kind !== 'call' || !item.call.success) continue
+            switch (item.name) {
+                case 'Identity.set_identity':
+                    if (!item.call.origin) continue
+                    let data = normalizeCall(ctx, item)
+                    identitiesData.push({
+                        id: getOriginAccountId(item.call.origin),
+                        ...data,
+                    })
+                    break
+                case 'Identity.clear_indentity':
+                    if (!item.call.origin) continue
+                    identitiesData.push({
+                        id: getOriginAccountId(item.call),
+                        display: null,
+                        legal: null,
+                        web: null,
+                        riot: null,
+                        email: null,
+                        twitter: null,
+                    })
+            }
+        }
+    }
+
+    await saveIdentities(ctx, identitiesData)
+})
+
+async function saveIdentities(ctx: Ctx, identitiesData: IdentityData[]) {
     let accountIds = new Set<string>()
-    for (let i of indentityData) {
+    for (let i of identitiesData) {
         accountIds.add(i.id)
     }
 
@@ -43,8 +74,7 @@ processor.run(new TypeormDatabase(), async (ctx) => {
         return new Map(accounts.map((a) => [a.id, a]))
     })
 
-    for (let i of indentityData) {
-
+    for (let i of identitiesData) {
         let account = getAccount(accounts, i.id)
         account.display = i.display
         account.email = i.email
@@ -54,8 +84,8 @@ processor.run(new TypeormDatabase(), async (ctx) => {
         account.web = i.web
     }
 
-    await ctx.store.save(Array.from(accounts.values()))
-})
+    await ctx.store.save([...accounts.values()])
+}
 
 interface IdentityData {
     id: string
@@ -78,7 +108,7 @@ function getIdentityData(ctx: Ctx): IdentityData[] {
                     let data = normalizeCall(ctx, item)
                     identities.push({
                         id: getOriginAccountId(item.call.origin),
-                        ...data
+                        ...data,
                     })
                     break
                 case 'Identity.clear_indentity':

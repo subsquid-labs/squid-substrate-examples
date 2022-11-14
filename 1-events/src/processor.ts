@@ -1,6 +1,6 @@
 import {lookupArchive} from '@subsquid/archive-registry'
 import * as ss58 from '@subsquid/ss58'
-import {BatchContext, BatchProcessorItem, SubstrateBatchProcessor} from '@subsquid/substrate-processor'
+import {BatchContext, BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock} from '@subsquid/substrate-processor'
 import {EventItem} from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import {Store, TypeormDatabase} from '@subsquid/typeorm-store'
 import {In} from 'typeorm'
@@ -27,8 +27,20 @@ type Item = BatchProcessorItem<typeof processor>
 type Ctx = BatchContext<Store, Item>
 
 processor.run(new TypeormDatabase(), async (ctx) => {
-    let transfersData = getTransfers(ctx)
+    let transfersData: TransferEventData[] = []
 
+    for (let block of ctx.blocks) {
+        for (let item of block.items) {
+            if (item.name == 'Balances.Transfer') {
+                transfersData.push(handleTransfer(ctx, block.header, item))
+            }
+        }
+    }
+
+    await saveTransfers(ctx, transfersData)
+})
+
+async function saveTransfers(ctx: Ctx, transfersData: TransferEventData[]) {
     let accountIds = new Set<string>()
     for (let t of transfersData) {
         accountIds.add(t.from)
@@ -62,7 +74,7 @@ processor.run(new TypeormDatabase(), async (ctx) => {
 
     await ctx.store.save(Array.from(accounts.values()))
     await ctx.store.insert(transfers)
-})
+}
 
 interface TransferEventData {
     id: string
@@ -75,26 +87,22 @@ interface TransferEventData {
     amount: bigint
 }
 
-function getTransfers(ctx: Ctx): TransferEventData[] {
-    let transfers: TransferEventData[] = []
-    for (let block of ctx.blocks) {
-        for (let item of block.items) {
-            if (item.name == 'Balances.Transfer') {
-                let event = normalizeTransferEvent(ctx, item)
-                transfers.push({
-                    id: item.event.id,
-                    blockNumber: block.header.height,
-                    timestamp: new Date(block.header.timestamp),
-                    extrinsicHash: item.event.extrinsic?.hash,
-                    call: item.event.call?.name,
-                    from: ss58.codec('kusama').encode(event.from),
-                    to: ss58.codec('kusama').encode(event.to),
-                    amount: event.amount,
-                })
-            }
-        }
+function handleTransfer(
+    ctx: Ctx,
+    block: SubstrateBlock,
+    item: EventItem<'Balances.Transfer', {event: {args: true; extrinsic: {hash: true}; call: {}}}>
+): TransferEventData {
+    let event = normalizeTransferEvent(ctx, item)
+    return {
+        id: item.event.id,
+        blockNumber: block.height,
+        timestamp: new Date(block.timestamp),
+        extrinsicHash: item.event.extrinsic?.hash,
+        call: item.event.call?.name,
+        from: encodeId(event.from),
+        to: encodeId(event.to),
+        amount: event.amount,
     }
-    return transfers
 }
 
 function normalizeTransferEvent(
@@ -123,6 +131,10 @@ function getAccount(m: Map<string, Account>, id: string): Account {
         m.set(id, acc)
     }
     return acc
+}
+
+function encodeId(id: Uint8Array): string {
+    return ss58.codec('kusama').encode(id)
 }
 
 class UknownVersionError extends Error {
