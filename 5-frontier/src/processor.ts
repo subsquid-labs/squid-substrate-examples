@@ -9,7 +9,7 @@ import {EventItem} from '@subsquid/substrate-processor/lib/interfaces/dataSelect
 import {getEvmLog} from '@subsquid/substrate-frontier-evm'
 import {getTransaction} from '@subsquid/substrate-frontier-evm/lib/transaction'
 
-export const contractAddress = '0xb654611f84a8dc429ba3cb4fda9fad236c505a1a'
+export const CONTRACT_ADDRESS = '0xb654611f84a8dc429ba3cb4fda9fad236c505a1a'
 
 const database = new TypeormDatabase()
 const processor = new SubstrateBatchProcessor()
@@ -18,7 +18,7 @@ const processor = new SubstrateBatchProcessor()
         chain: 'wss://wss.api.moonriver.moonbeam.network',
     })
     .setTypesBundle('moonbeam')
-    .addEvmLog(contractAddress, {
+    .addEvmLog(CONTRACT_ADDRESS, {
         filter: [[erc721.events['Transfer(address,address,uint256)'].topic]],
         data: {
             event: {
@@ -90,16 +90,11 @@ async function saveTransfers(ctx: Context, transfersData: TransferData[]) {
 
     const transfers: Transfer[] = []
 
-    const tokens: Map<string, Token> = new Map(
-        (await ctx.store.findBy(Token, {id: In([...tokensIds])})).map((token) => [token.id, token])
-    )
-
-    const owners: Map<string, Owner> = new Map(
-        (await ctx.store.findBy(Owner, {id: In([...ownersIds])})).map((owner) => [owner.id, owner])
-    )
+    const tokens = await ctx.store.findBy(Token, {id: In([...tokensIds])}).then((q) => new Map(q.map((i) => [i.id, i])))
+    const owners = await ctx.store.findBy(Owner, {id: In([...ownersIds])}).then((q) => new Map(q.map((i) => [i.id, i])))
 
     for (const transferData of transfersData) {
-        const contract = new erc721.Contract(ctx, {height: transferData.block}, contractAddress)
+        const contract = new erc721.Contract(ctx, {height: transferData.block}, CONTRACT_ADDRESS)
 
         let from = owners.get(transferData.from)
         if (from == null) {
@@ -150,10 +145,10 @@ let contractEntity: Contract | undefined
 
 export async function getContractEntity(store: Store): Promise<Contract> {
     if (contractEntity == null) {
-        contractEntity = await store.get(Contract, contractAddress)
+        contractEntity = await store.get(Contract, CONTRACT_ADDRESS)
         if (contractEntity == null) {
             contractEntity = new Contract({
-                id: contractAddress,
+                id: CONTRACT_ADDRESS,
                 name: 'Moonsama',
                 symbol: 'MSAMA',
                 totalSupply: 1000n,

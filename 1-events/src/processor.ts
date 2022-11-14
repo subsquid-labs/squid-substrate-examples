@@ -47,9 +47,9 @@ async function saveTransfers(ctx: Ctx, transfersData: TransferEventData[]) {
         accountIds.add(t.to)
     }
 
-    let accounts = await ctx.store.findBy(Account, {id: In([...accountIds])}).then((accounts) => {
-        return new Map(accounts.map((a) => [a.id, a]))
-    })
+    let accounts = await ctx.store
+        .findBy(Account, {id: In([...accountIds])})
+        .then((q) => new Map(q.map((i) => [i.id, i])))
 
     let transfers: Transfer[] = []
 
