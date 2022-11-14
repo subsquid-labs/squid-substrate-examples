@@ -1,0 +1,16 @@
+type Account @entity {
+  id: ID!
+  rmrkNfts: [RmrkNFT!] @derivedFrom(field: "owner")
+}
+
+type RmrkNFT @entity {
+  id: ID!
+  symbol: String
+  transferable: Boolean
+  collection: String!
+  sn: String
+  owner: Account
+  metadata: String
+  parent: RmrkNFT
+  children: [RmrkNFT!] @derivedFrom(field: "parent")
+}
