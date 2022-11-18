@@ -1,0 +1,10 @@
+type Transfer @entity {
+  id: ID!
+  blockNumber: Int! @index
+  timestamp: DateTime! @index
+  extrinsicHash: String @index
+  call: String @index  
+  from: String!
+  to: String!
+  amount: BigInt! @index
+}
