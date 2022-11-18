@@ -13,21 +13,21 @@ export class Transfer {
   id!: string
 
   @Index_()
-  @ManyToOne_(() => Token, {nullable: false})
+  @ManyToOne_(() => Token, {nullable: true})
   token!: Token
 
   @Index_()
   @ManyToOne_(() => Owner, {nullable: true})
-  from!: Owner | undefined | null
+  from!: Owner
 
   @Index_()
   @ManyToOne_(() => Owner, {nullable: true})
-  to!: Owner | undefined | null
+  to!: Owner
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   timestamp!: bigint
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   block!: number
 
   @Column_("text", {nullable: false})

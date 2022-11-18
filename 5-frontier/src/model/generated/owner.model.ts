@@ -1,5 +1,4 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, OneToMany as OneToMany_} from "typeorm"
-import * as marshal from "./marshal"
 import {Token} from "./token.model"
 
 @Entity_()
@@ -13,7 +12,4 @@ export class Owner {
 
   @OneToMany_(() => Token, e => e.owner)
   ownedTokens!: Token[]
-
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
-  balance!: bigint | undefined | null
 }

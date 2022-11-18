@@ -3,7 +3,7 @@ import {Store, TypeormDatabase} from '@subsquid/typeorm-store'
 import {BatchContext, BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock} from '@subsquid/substrate-processor'
 import {In} from 'typeorm'
 import {ethers} from 'ethers'
-import {Contract, Owner, Token, Transfer} from './model'
+import {Owner, Token, Transfer} from './model'
 import * as erc721 from './abi/erc721'
 import {EventItem} from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import {getEvmLog} from '@subsquid/substrate-frontier-evm'
@@ -98,13 +98,13 @@ async function saveTransfers(ctx: Context, transfersData: TransferData[]) {
 
         let from = owners.get(transferData.from)
         if (from == null) {
-            from = new Owner({id: transferData.from, balance: 0n})
+            from = new Owner({id: transferData.from})
             owners.set(from.id, from)
         }
 
         let to = owners.get(transferData.to)
         if (to == null) {
-            to = new Owner({id: transferData.to, balance: 0n})
+            to = new Owner({id: transferData.to})
             owners.set(to.id, to)
         }
 
@@ -115,7 +115,6 @@ async function saveTransfers(ctx: Context, transfersData: TransferData[]) {
             token = new Token({
                 id: tokenId,
                 uri: await contract.tokenURI(transferData.token),
-                contract: await getContractEntity(ctx.store),
             })
             tokens.set(token.id, token)
         }
@@ -139,22 +138,4 @@ async function saveTransfers(ctx: Context, transfersData: TransferData[]) {
     await ctx.store.save([...owners.values()])
     await ctx.store.save([...tokens.values()])
     await ctx.store.save(transfers)
-}
-
-let contractEntity: Contract | undefined
-
-export async function getContractEntity(store: Store): Promise<Contract> {
-    if (contractEntity == null) {
-        contractEntity = await store.get(Contract, CONTRACT_ADDRESS)
-        if (contractEntity == null) {
-            contractEntity = new Contract({
-                id: CONTRACT_ADDRESS,
-                name: 'Moonsama',
-                symbol: 'MSAMA',
-                totalSupply: 1000n,
-            })
-            await store.insert(contractEntity)
-        }
-    }
-    return contractEntity
 }
