@@ -9,7 +9,7 @@ This repo contains sample [squid ETLs](https://docs.subsquid.io/overview/) for i
 - [3-storage](https://github.com/subsquid-labs/substrate-storage-example): Queries the historical network storage state to enrich event data.
 - [4-constants](): TBA
 - [5-frontier](https://github.com/subsquid-labs/substrate-frontier-example): Indexes EVM logs emitted by a contract on Moonriver. The approach shown in this example is suitable for use cases requiring a mixture of Substrate and EVM data; consider using [EVM processor](https://docs.subsquid.io/evm-indexing) instead if you only need EVM data.
-- [6-remark](https://github.com/subsquid-labs/substrate-remark-example): Indexes on-chain footnotes made by the `system.remark` extrinsic.
+- [6-remark](https://github.com/subsquid-labs/substrate-remark-example): Indexes on-chain footnotes made by the `System.remark` extrinsic.
 - [8-custom-resolver](https://github.com/subsquid-labs/squid-substrate-examples/tree/master/8-custom-resolver): Indexes `Balance.Transfer` events and outputs total daily volumes via a custom GraphQL resolver.
 
 ## Prerequisites
