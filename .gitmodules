@@ -1,15 +1,15 @@
 [submodule "substrate-events-example"]
 	path = 1-events
-	url = https://github.com/subsquid/substrate-events-example.git
+	url = https://github.com/subsquid-labs/substrate-events-example.git
 [submodule "substrate-calls-example"]
 	path = 2-calls
-	url = https://github.com/subsquid/substrate-calls-example.git
+	url = https://github.com/subsquid-labs/substrate-calls-example.git
 [submodule "substrate-storage-example"]
 	path = 3-storage
-	url = https://github.com/subsquid/substrate-storage-example.git
+	url = https://github.com/subsquid-labs/substrate-storage-example.git
 [submodule "substrate-frontier-example"]
 	path = 5-frontier
-	url = https://github.com/subsquid/substrate-frontier-example.git
+	url = https://github.com/subsquid-labs/substrate-frontier-example.git
 [submodule "substrate-remark-example"]
 	path = 6-remark
-	url = https://github.com/subsquid/substrate-remark-example.git
+	url = https://github.com/subsquid-labs/substrate-remark-example.git
