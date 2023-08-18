@@ -19,7 +19,7 @@
     "@subsquid/typeorm-migration": "1.2.1",
     "@subsquid/typeorm-store": "1.2.1",
     "dotenv": "^16.0.0",
-    "pg": "8.11.2",
+    "pg": "8.11.3",
     "type-graphql": "^1.2.0-rc.1",
     "typeorm": "0.3.17"
   },
