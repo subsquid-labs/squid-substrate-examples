@@ -28,6 +28,6 @@
     "@subsquid/substrate-typegen": "8.1.0",
     "@subsquid/typeorm-codegen": "2.0.1",
     "@types/node": "20.14.6",
-    "typescript": "5.4.5"
+    "typescript": "5.5.2"
   }
 }
