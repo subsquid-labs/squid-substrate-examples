@@ -1,4 +1,4 @@
-# EVM indexing squids
+# Substrate indexing squids
 
 This repo contains sample [squid ETLs](https://docs.subsquid.io/overview/) for indexing, transforming and presenting on-chain data of Substrate networks as GraphQL APIs. Each squid highlights a specific feature of the Subquid SDK.
 
