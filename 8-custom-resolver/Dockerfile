@@ -1,4 +1,4 @@
-FROM node:22-alpine AS node
+FROM node:24-alpine AS node
 
 FROM node AS node-with-gyp
 RUN apk add g++ make python3
