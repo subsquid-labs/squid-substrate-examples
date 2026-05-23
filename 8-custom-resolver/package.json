@@ -21,7 +21,7 @@
     "dotenv": "^17.0.0",
     "pg": "8.21.0",
     "type-graphql": "^1.2.0-rc.1",
-    "typeorm": "0.3.30"
+    "typeorm": "1.0.0"
   },
   "devDependencies": {
     "@subsquid/substrate-metadata-explorer": "3.2.0",
