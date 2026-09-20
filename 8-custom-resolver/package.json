@@ -18,7 +18,7 @@
     "@subsquid/substrate-processor": "8.8.2",
     "@subsquid/typeorm-migration": "1.4.0",
     "@subsquid/typeorm-store": "1.9.2",
-    "dotenv": "^17.0.0",
+    "dotenv": "^18.0.0",
     "pg": "8.23.0",
     "type-graphql": "^1.2.0-rc.1",
     "typeorm": "1.1.1"
